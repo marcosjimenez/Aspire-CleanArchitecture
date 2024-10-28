@@ -1,7 +1,7 @@
 ﻿using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 
-namespace CleanArchitectureSample.Application.Dtos.Response;
+namespace CleanArchitectureSample.Application.Dto.Response;
 
 public record ContactResponse
 (

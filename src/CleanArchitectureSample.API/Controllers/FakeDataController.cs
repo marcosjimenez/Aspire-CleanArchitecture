@@ -1,5 +1,5 @@
 ﻿using CleanArchitectureSample.Application.Cqrs.FakeData.Commands;
-using CleanArchitectureSample.Application.Dtos.Response;
+using CleanArchitectureSample.Application.Dto.Response;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 

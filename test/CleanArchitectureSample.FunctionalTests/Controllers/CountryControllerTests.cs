@@ -1,7 +1,7 @@
 using FluentAssertions;
 using System.Net.Http.Json;
 using CleanArchitectureSample.FunctionalTests.Infrastructure;
-using CleanArchitectureSample.Application.Dtos.Response;
+using CleanArchitectureSample.Application.Dto.Response;
 
 namespace CleanArchitectureSample.FunctionalTests.Controllers
 {

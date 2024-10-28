@@ -1,9 +1,11 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace CleanArchitectureSample.Application.Dtos.Request;
+namespace CleanArchitectureSample.Application.Dto.Response;
 
-public record CreateOrUpdateCountryRequest
+public record CountryResponse
 (
+    int Id,
+
     [Required]
     [MaxLength(100)]
     string Name,

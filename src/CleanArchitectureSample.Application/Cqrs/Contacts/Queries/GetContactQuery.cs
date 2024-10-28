@@ -1,4 +1,4 @@
-﻿using CleanArchitectureSample.Application.Dtos.Response;
+﻿using CleanArchitectureSample.Application.Dto.Response;
 using MediatR;
 
 namespace CleanArchitectureSample.Application.Cqrs.Contacts.Queries;

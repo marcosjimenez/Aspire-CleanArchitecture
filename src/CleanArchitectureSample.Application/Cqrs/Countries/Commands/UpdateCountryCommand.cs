@@ -1,6 +1,6 @@
-﻿using CleanArchitectureSample.Application.Dtos.Request;
+﻿using CleanArchitectureSample.Application.Dto.Request;
 using MediatR;
-using CleanArchitectureSample.Application.Dtos.Response;
+using CleanArchitectureSample.Application.Dto.Response;
 
 namespace CleanArchitectureSample.Application.Cqrs.Countries.Commands;
 
