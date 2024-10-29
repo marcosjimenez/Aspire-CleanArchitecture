@@ -1,6 +1,6 @@
 ﻿using AutoMapper;
-using CleanArchitectureSample.Application.Dtos.Request;
-using CleanArchitectureSample.Application.Dtos.Response;
+using CleanArchitectureSample.Application.Dto.Request;
+using CleanArchitectureSample.Application.Dto.Response;
 using CleanArchitectureSample.Core.Aggregates;
 
 namespace CleanArchitectureSample.Application.Mappers;

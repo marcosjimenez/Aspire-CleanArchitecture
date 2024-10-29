@@ -1,5 +1,5 @@
-﻿using CleanArchitectureSample.Application.Dtos.Request;
-using CleanArchitectureSample.Application.Dtos.Response;
+﻿using CleanArchitectureSample.Application.Dto.Request;
+using CleanArchitectureSample.Application.Dto.Response;
 using MediatR;
 
 namespace CleanArchitectureSample.Application.Cqrs.Contacts.Commands;

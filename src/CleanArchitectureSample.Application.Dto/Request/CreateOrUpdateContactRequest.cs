@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace CleanArchitectureSample.Application.Dtos.Request;
+namespace CleanArchitectureSample.Application.Dto.Request;
 
 public record CreateOrUpdateContactRequest
 (

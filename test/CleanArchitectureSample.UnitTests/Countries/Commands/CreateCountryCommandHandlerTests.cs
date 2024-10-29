@@ -1,5 +1,5 @@
 ﻿using CleanArchitectureSample.Application.Cqrs.Countries.Commands;
-using CleanArchitectureSample.Application.Dtos.Request;
+using CleanArchitectureSample.Application.Dto.Request;
 
 namespace CleanArchitectureSample.UnitTests.Countries.Commands;
 

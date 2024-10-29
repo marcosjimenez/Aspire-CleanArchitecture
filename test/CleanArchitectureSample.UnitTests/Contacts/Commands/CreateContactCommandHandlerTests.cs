@@ -1,6 +1,5 @@
-﻿
-using CleanArchitectureSample.Application.Cqrs.Contacts.Commands;
-using CleanArchitectureSample.Application.Dtos.Request;
+﻿using CleanArchitectureSample.Application.Cqrs.Contacts.Commands;
+using CleanArchitectureSample.Application.Dto.Request;
 
 namespace CleanArchitectureSample.UnitTests.Contacts.Commands;
 

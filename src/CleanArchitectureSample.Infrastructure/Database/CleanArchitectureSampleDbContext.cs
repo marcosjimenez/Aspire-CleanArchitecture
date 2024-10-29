@@ -5,7 +5,6 @@ namespace CleanArchitectureSample.Infrastructure.Database;
 
 public class CleanArchitectureSampleDbContext(DbContextOptions<CleanArchitectureSampleDbContext> options) : DbContext(options)
 {
-
     public DbSet<ContactEntity> Contact { get; set; }
     public DbSet<CountryEntity> Country { get; set; }
 

@@ -1,5 +1,4 @@
 ﻿using CleanArchitectureSample.Application.Cqrs.Contacts.Commands;
-using CleanArchitectureSample.Application.Dtos.Request;
 
 namespace CleanArchitectureSample.UnitTests.Contacts.Commands;
 

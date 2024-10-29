@@ -7,6 +7,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Aspire.StackExchange.Redis.DistributedCaching" Version="8.2.2" />
     <PackageReference Include="Bogus" Version="35.6.1" />
     <PackageReference Include="Microsoft.Data.Sqlite" Version="8.0.10" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="8.0.10" />
@@ -18,6 +19,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\aspire\CleanArchitectureSample.Aspire.ServiceDefaults\CleanArchitectureSample.Aspire.ServiceDefaults.csproj" />
     <ProjectReference Include="..\CleanArchitectureSample.Application\CleanArchitectureSample.Application.csproj" />
     <ProjectReference Include="..\CleanArchitectureSample.Core\CleanArchitectureSample.Core.csproj" />
   </ItemGroup>

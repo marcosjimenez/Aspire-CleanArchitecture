@@ -1,9 +1,9 @@
 ﻿using MediatR;
 using Microsoft.AspNetCore.Mvc;
-using CleanArchitectureSample.Application.Dtos.Request;
+using CleanArchitectureSample.Application.Dto.Request;
 using CleanArchitectureSample.Application.Cqrs.Contacts.Queries;
 using CleanArchitectureSample.Application.Cqrs.Contacts.Commands;
-using CleanArchitectureSample.Application.Dtos.Response;
+using CleanArchitectureSample.Application.Dto.Response;
 
 namespace CleanArchitectureSample.API.Controllers;
 
