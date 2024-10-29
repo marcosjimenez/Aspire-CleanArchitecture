@@ -1,4 +1,5 @@
 using CleanArchitectureSample.Application.Cqrs.Contacts.Queries;
+using CleanArchitectureSample.Application.Dto.Response;
 
 namespace CleanArchitectureSample.UnitTests.Contacts.Queries
 {
@@ -8,9 +9,15 @@ namespace CleanArchitectureSample.UnitTests.Contacts.Queries
         public async Task Handle_Works()
         {
             var contactRepository = new Mock<IContactRepository>();
+            var cacheService = new Mock<ICacheService> { DefaultValueProvider = new ZeroDefaultValueProvider() };
 
             contactRepository.Setup(x => x.GetAllAsync())
                 .ReturnsAsync(GetAllContacts());
+
+            cacheService.Setup(x => x.GetAsync<IEnumerable<ContactResponse>?>(It.IsAny<string>()))
+                .ReturnsAsync((IEnumerable<ContactResponse>?)null);
+            cacheService.Setup(x => x.SetAsync(It.IsAny<string>(), It.IsAny<object>()))
+                .Returns(Task.CompletedTask);
 
             var configuration = new MapperConfiguration(cfg =>
             {
@@ -19,7 +26,7 @@ namespace CleanArchitectureSample.UnitTests.Contacts.Queries
             });
             IMapper mapper = new Mapper(configuration);
 
-            var handler = new GetAllContactsQueryHandler(contactRepository.Object, mapper);
+            var handler = new GetAllContactsQueryHandler(contactRepository.Object, cacheService.Object, mapper);
 
             var response = await handler.Handle(new GetAllContactsQuery(), new CancellationToken());
 
