@@ -12,10 +12,12 @@
   <ItemGroup>
     <PackageReference Include="Aspire.Hosting.AppHost" Version="8.2.2" />
     <PackageReference Include="Aspire.Hosting.Redis" Version="8.2.2" />
+    <PackageReference Include="Aspire.Hosting.SqlServer" Version="8.2.2" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\..\src\CleanArchitectureSample.API\CleanArchitectureSample.API.csproj" />
+    <ProjectReference Include="..\CleanArchitectureSample.Aspire.Common\CleanArchitectureSample.Aspire.Common.csproj" IsAspireProjectResource="false"/>
     <ProjectReference Include="..\CleanArchitectureSample.Aspire.Web\CleanArchitectureSample.Aspire.Web.csproj" />
   </ItemGroup>
 

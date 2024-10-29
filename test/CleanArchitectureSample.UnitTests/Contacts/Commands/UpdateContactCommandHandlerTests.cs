@@ -1,5 +1,6 @@
 ﻿using CleanArchitectureSample.Application.Cqrs.Contacts.Commands;
 using CleanArchitectureSample.Application.Dto.Request;
+using Microsoft.AspNetCore.Builder;
 
 namespace CleanArchitectureSample.UnitTests.Contacts.Commands;
 
@@ -10,6 +11,7 @@ public class UpdateContactCommandHandlerTests
     {
         var contactRepository = new Mock<IContactRepository>();
         var countryRepository = new Mock<ICountryRepository>();
+        var cacheService = new Mock<ICacheService>();
 
         var contactName = "Test Contact Name";
         contactRepository.Setup(x => x.Exists(It.IsAny<int>()))
@@ -40,7 +42,7 @@ public class UpdateContactCommandHandlerTests
         });
         IMapper mapper = new Mapper(configuration);
 
-        var handler = new UpdateContactCommandHandler(contactRepository.Object, countryRepository.Object, mapper);
+        var handler = new UpdateContactCommandHandler(contactRepository.Object, countryRepository.Object, cacheService.Object, mapper);
 
         var contactDto = new CreateOrUpdateContactRequest(
             contactName,

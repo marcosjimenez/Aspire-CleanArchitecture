@@ -8,6 +8,7 @@ public class DeleteContactCommandHandlerTests
     public async Task Handle_Works()
     {
         var contactRepository = new Mock<IContactRepository>();
+        var cacheService = new Mock<ICacheService>();
 
         contactRepository.Setup(x => x.Exists(It.IsAny<int>()))
             .Returns(true);
@@ -19,7 +20,7 @@ public class DeleteContactCommandHandlerTests
         });
         IMapper mapper = new Mapper(configuration);
 
-        var handler = new DeleteContactCommandHandler(contactRepository.Object);
+        var handler = new DeleteContactCommandHandler(contactRepository.Object, cacheService.Object);
 
         var response = await handler.Handle(new DeleteContactCommand(1), new CancellationToken());
 

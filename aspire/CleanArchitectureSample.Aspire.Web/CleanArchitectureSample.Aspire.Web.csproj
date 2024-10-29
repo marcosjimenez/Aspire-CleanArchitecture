@@ -12,6 +12,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\src\CleanArchitectureSample.Application.Dto\CleanArchitectureSample.Application.Dto.csproj" />
+    <ProjectReference Include="..\CleanArchitectureSample.Aspire.Common\CleanArchitectureSample.Aspire.Common.csproj" />
     <ProjectReference Include="..\CleanArchitectureSample.Aspire.ServiceDefaults\CleanArchitectureSample.Aspire.ServiceDefaults.csproj" />
   </ItemGroup>
 
