@@ -1,5 +1,6 @@
 using CleanArchitectureSample.API;
 using CleanArchitectureSample.Application;
+using CleanArchitectureSample.Aspire.ServiceDefaults;
 using CleanArchitectureSample.Infrastructure;
 using CleanArchitectureSample.Infrastructure.Database;
 
@@ -10,13 +11,16 @@ builder.Configuration
     .AddJsonFile(ApiConstants.Configuration.DefaultSettingsFile, optional: true, reloadOnChange: true)
     .AddEnvironmentVariables();
 
+builder.AddServiceDefaults();
+
 builder.Services.AddControllers();
 builder.Services
     .AddEndpointsApiExplorer()
     .AddSwaggerGen()
     .AddApiSecurity(builder.Configuration[ApiConstants.Configuration.ApiKeySection] ?? String.Empty)
-    .AddInfrastructureServices(builder.Configuration)
     .AddApplicationServices();
+
+builder.AddInfrastructureServices();
 
 var app = builder.Build();
 

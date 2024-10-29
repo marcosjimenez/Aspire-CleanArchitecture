@@ -6,25 +6,29 @@ using CleanArchitectureSample.Infrastructure.Database;
 using CleanArchitectureSample.Infrastructure.Database.Repository;
 using CleanArchitectureSample.Core.Aggregates;
 using Bogus;
+using Microsoft.Extensions.Hosting;
 
 namespace CleanArchitectureSample.Infrastructure;
 
 public static class InfrastructureServiceExtensions
 {
-    public static IServiceCollection AddInfrastructureServices(this IServiceCollection services, IConfiguration configuration)
+    public static IHostApplicationBuilder AddInfrastructureServices(this IHostApplicationBuilder builder)
     {
-        var connectionString = configuration.GetConnectionString(InfrastructureConstants.Database.DefaultConnection);
-        services.AddDbContext<CleanArchitectureSampleDbContext>(options =>
+        builder.AddRedisDistributedCache("cache");
+
+        var connectionString = builder.Configuration.GetConnectionString(InfrastructureConstants.Database.DefaultConnection);
+        builder.Services.AddDbContext<CleanArchitectureSampleDbContext>(options =>
             options
                 .UseSqlite(connectionString)
                 .EnableSensitiveDataLogging(true)
             );
 
-        services
+        builder.Services
+            .AddScoped<ICacheManager, CacheManager>()
             .AddScoped<ICountryRepository, CountryRepository>()
             .AddScoped<IContactRepository, ContactRepository>();
 
-        return services;
+        return builder;
     }
 
     public static  CleanArchitectureSampleDbContext SeedFakeData(
