@@ -1,12 +1,12 @@
-﻿using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
+﻿using Microsoft.Extensions.DependencyInjection;
 using CleanArchitectureSample.Application.Contracts;
 using CleanArchitectureSample.Infrastructure.Database;
 using CleanArchitectureSample.Infrastructure.Database.Repository;
 using CleanArchitectureSample.Core.Aggregates;
 using Bogus;
 using Microsoft.Extensions.Hosting;
+using CleanArchitectureSample.Infrastructure.Services;
+using CleanArchitectureSample.Aspire.Common;
 
 namespace CleanArchitectureSample.Infrastructure;
 
@@ -14,17 +14,11 @@ public static class InfrastructureServiceExtensions
 {
     public static IHostApplicationBuilder AddInfrastructureServices(this IHostApplicationBuilder builder)
     {
-        builder.AddRedisDistributedCache("cache");
-
-        var connectionString = builder.Configuration.GetConnectionString(InfrastructureConstants.Database.DefaultConnection);
-        builder.Services.AddDbContext<CleanArchitectureSampleDbContext>(options =>
-            options
-                .UseSqlite(connectionString)
-                .EnableSensitiveDataLogging(true)
-            );
+        builder.AddRedisDistributedCache(ResourceNames.RedisCache);
+        builder.AddSqlServerDbContext<CleanArchitectureSampleDbContext>(ResourceNames.SqlDatabase);
 
         builder.Services
-            .AddScoped<ICacheManager, CacheManager>()
+            .AddScoped<ICacheService, CacheService>()
             .AddScoped<ICountryRepository, CountryRepository>()
             .AddScoped<IContactRepository, ContactRepository>();
 
@@ -41,7 +35,6 @@ public static class InfrastructureServiceExtensions
         {
             Faker.GlobalUniqueIndex = context.Country.Max(x => (int?)x.Id) ?? 0; 
             var testCountries = new Faker<CountryEntity>()
-                .RuleFor(o => o.Id, f => f.UniqueIndex)
                 .RuleFor(o => o.Name, f => f.Address.Country())
                 .RuleFor(o => o.Code, f => f.Address.CountryCode())
                 .RuleFor(o => o.TimeStamp, f => f.Date.Recent(0));
@@ -54,7 +47,6 @@ public static class InfrastructureServiceExtensions
             {
                 Faker.GlobalUniqueIndex = context.Contact.Max(x => (int?)x.Id) ?? 0;
                 var testContacts = new Faker<ContactEntity>()
-                    .RuleFor(o => o.Id, f => f.UniqueIndex)
                     .RuleFor(o => o.Name, f => f.Name.FirstName())
                     .RuleFor(o => o.LastName, f => f.Name.LastName())
                     .RuleFor(o => o.EMail, f => f.Internet.Email())

@@ -6,7 +6,11 @@ using MediatR;
 
 namespace CleanArchitectureSample.Application.Cqrs.Contacts.Commands;
 
-public class UpdateContactCommandHandler(IContactRepository contactRepository, ICountryRepository countryRepository, IMapper mapper)
+public class UpdateContactCommandHandler(
+    IContactRepository contactRepository,
+    ICountryRepository countryRepository,
+    ICacheService cacheService,
+    IMapper mapper)
     : IRequestHandler<UpdateContactCommand, ContactResponse>
 {
     private readonly IContactRepository _contactRepository = contactRepository ??
@@ -15,6 +19,8 @@ public class UpdateContactCommandHandler(IContactRepository contactRepository, I
         throw new ArgumentNullException(nameof(countryRepository));
     private readonly IMapper _mapper = mapper ??
         throw new ArgumentNullException(nameof(mapper));
+    private readonly ICacheService _cacheService = cacheService ??
+        throw new ArgumentNullException(nameof(cacheService));
 
     public async Task<ContactResponse> Handle(UpdateContactCommand request, CancellationToken cancellationToken)
     {
@@ -32,6 +38,8 @@ public class UpdateContactCommandHandler(IContactRepository contactRepository, I
 
         contactRepository.Update(contact);
         await contactRepository.SaveAsync();
+
+        await _cacheService.SetAsync(string.Format(ApplicationConstants.Cache.ContactItem, contact.Id), contact);
 
         return mapper.Map<ContactResponse>(await contactRepository.GetByIdWithIncludesAsync(contact.Id));
     }

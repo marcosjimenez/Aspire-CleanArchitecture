@@ -11,6 +11,7 @@ public class CustomWebApplicationFactory : WebApplicationFactory<Program>
     protected override IHost CreateHost(IHostBuilder builder)
     {
         builder.UseEnvironment("Test");
+
         var host = builder.Build();
         host.Start();
 

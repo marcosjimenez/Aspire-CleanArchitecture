@@ -29,12 +29,12 @@ using var scope = app.Services.CreateScope();
 var dbcontext = scope.ServiceProvider.GetRequiredService<CleanArchitectureSampleDbContext>();
 dbcontext.Database.EnsureCreated();
 
-// Fake data for Dev
-if (builder.Environment.IsDevelopment() && !dbcontext.Country.Any() && !dbcontext.Contact.Any())
-    dbcontext.SeedFakeData(25,100);
-
 if (app.Environment.IsDevelopment())
 {
+    // Fake data for Dev
+    if (!dbcontext.Country.Any() && !dbcontext.Contact.Any())
+        dbcontext.SeedFakeData(25, 100);
+
     app.UseSwagger();
     app.UseSwaggerUI();
 }

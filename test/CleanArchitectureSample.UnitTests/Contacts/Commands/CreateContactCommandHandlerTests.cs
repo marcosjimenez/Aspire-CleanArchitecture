@@ -11,6 +11,7 @@ public class CreateContactCommandHandlerTests
     {
         var contactRepository = new Mock<IContactRepository>();
         var countryRepository = new Mock<ICountryRepository>();
+        var cacheService = new Mock<ICacheService>();
 
         var contactName = "Test Contact Name";
         contactRepository.Setup(x => x.Create(It.IsAny<ContactEntity>()))
@@ -31,7 +32,7 @@ public class CreateContactCommandHandlerTests
         });
         IMapper mapper = new Mapper(configuration);
 
-        var handler = new CreateContactCommandHandler(contactRepository.Object, countryRepository.Object, mapper);
+        var handler = new CreateContactCommandHandler(contactRepository.Object, countryRepository.Object, cacheService.Object, mapper);
 
         var contactDto = new CreateOrUpdateContactRequest(
             contactName,

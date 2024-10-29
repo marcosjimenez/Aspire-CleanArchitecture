@@ -1,12 +1,13 @@
 using CleanArchitectureSample.Aspire.Web.Components;
 using CleanArchitectureSample.Aspire.Web;
 using CleanArchitectureSample.Aspire.ServiceDefaults;
+using CleanArchitectureSample.Aspire.Common;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add service defaults & Aspire components.
 builder.AddServiceDefaults();
-builder.AddRedisOutputCache("cache");
+builder.AddRedisOutputCache(ResourceNames.RedisCache);
 
 // Add services to the container.
 builder.Services.AddRazorComponents()

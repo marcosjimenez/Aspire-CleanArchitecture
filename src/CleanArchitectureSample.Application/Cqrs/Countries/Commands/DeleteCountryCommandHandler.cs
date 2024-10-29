@@ -11,9 +11,6 @@ public class DeleteCountryCommandHandler(ICountryRepository countryRepository)
 
     public async Task<bool> Handle(DeleteCountryCommand request, CancellationToken cancellationToken)
     {
-        if (!_countryRepository.Exists(request.Id))
-            return false;
-
         _countryRepository.Delete(request.Id);
         await _countryRepository.SaveAsync();
 
