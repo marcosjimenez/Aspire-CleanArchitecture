@@ -40,6 +40,7 @@ public class UpdateContactCommandHandler(
         await contactRepository.SaveAsync();
 
         await _cacheService.SetAsync(string.Format(ApplicationConstants.Cache.ContactItem, contact.Id), contact);
+        await _cacheService.RemoveAsync(ApplicationConstants.Cache.ContactList);
 
         return mapper.Map<ContactResponse>(await contactRepository.GetByIdWithIncludesAsync(contact.Id));
     }
