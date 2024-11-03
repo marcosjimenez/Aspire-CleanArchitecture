@@ -7,7 +7,7 @@ namespace CleanArchitectureSample.Aspire.Web;
 
 public class ContactApiClient(HttpClient httpClient, IMapper mapper)
 {
-    public async Task<ContactResponse[]> GetContactsAsync(int maxItems = 100, CancellationToken cancellationToken = default)
+    public async Task<ContactModel[]> GetContactsAsync(int maxItems = 100, CancellationToken cancellationToken = default)
     {
         List<ContactResponse>? contacts = null;
 
@@ -24,7 +24,7 @@ public class ContactApiClient(HttpClient httpClient, IMapper mapper)
             }
         }
 
-        return contacts?.ToArray() ?? [];
+        return mapper.Map<ContactModel[]>(contacts?.ToArray() ?? []);
     }
 
     public async Task<ContactModel> GetContactAsync(int contactId, CancellationToken cancellationToken = default)

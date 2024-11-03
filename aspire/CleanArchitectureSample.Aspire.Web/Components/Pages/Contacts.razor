@@ -1,93 +1,149 @@
 ﻿@page "/contacts"
+@inherits BasePage
+
 @using CleanArchitectureSample.Application.Dto.Response
 @using System.Net.Http.Json
-@using MudBlazor
+@using CleanArchitectureSample.Aspire.Web.Model
+
 @attribute [StreamRendering(true)]
-@attribute [OutputCache(Duration = 5)]
 
 @inject ContactApiClient ContactApi
-@inject NavigationManager UriHelper
-@inject IDialogService DialogService
+@inject IJSRuntime JS
 
 <PageTitle>Contacts</PageTitle>
 
-<h1>Contacts</h1>
+<div class="d-flex align-items-center">
+    <h1>Contacts</h1>
+    <div class="ms-auto">
+        <a href="/contact" class="btn btn-primary">Create new</a>
+    </div>
+</div>
 
-<MudButtonGroup>
-    <MudButton Variant="Variant.Filled" Color="Color.Surface" Href="/contact">Create New Contact</MudButton>
-    <MudToggleIconButton @bind-Toggled="ShowFilters"
-                         Icon="bi bi-funnel-fill"
-                         Color="@Color.Error"
-                         ToggledIcon="bi bi-funnel-fill"
-                         ToggledColor="@Color.Success"
-                         title="@(ShowFilters ? "On" : "Off")" />
-</MudButtonGroup>
 
 @if (contacts == null)
 {
-    <MudProgressCircular Color="Color.Default" Indeterminate="true" />
+    <div class="loader"></div>
 }
 else
 {
-    <MudDataGrid Items="@contacts" Hover="true" Filterable="@ShowFilters" SortMode="@SortMode.Multiple" Groupable="false">
-        <Columns>
-            <PropertyColumn Property="x => x.Id" />
-            <PropertyColumn Property="x => x.Name" >
-                <CellTemplate>
-                    <a href="@($"contact/{context.Item.Id}")">
-                        @context.Item.Name
-                    </a>
-                </CellTemplate>
-            </PropertyColumn>
-            <PropertyColumn Property="x => x.LastName" Title="LastName" />
-            <PropertyColumn Property="x => x.EMail" />
-            <PropertyColumn Property="x => x.BirthDate" Title="Birth Date" >
-                <CellTemplate>
-                    @context.Item.BirthDate?.ToString("d")
-                </CellTemplate>
-            </PropertyColumn>
-            <TemplateColumn CellClass="d-flex justify-end">
-                <CellTemplate>
-                    <MudButton Variant="Variant.Filled" Color="Color.Surface" Href="@($"contact/{context.Item.Id}")">
-                        <i class="bi bi-pencil-square"></i>
-                    </MudButton>
-                    <MudButton @onclick="@((e) => DeleteContactAsync(context.Item))" Variant="Variant.Filled" Color="Color.Primary">
-                        <i class="bi bi-trash-fill"></i>
-                    </MudButton>
-                </CellTemplate>
-            </TemplateColumn>
-        </Columns>
-    </MudDataGrid>
+    <div class="container">
+        <div class="row sticky-lg-top">
+            <div class="col-lg-12 col-md-12">
+                <div class="card" style="border-radius: 15px;">
+                    <div class="card-header">
+                        Search
+                    </div>
+                    <div class="card-body">
+                        <div class="input-group mb-3">
+                            <input type="text" class="form-control" placeholder="Search" aria-label="Search" @bind-value="filterText">
+                            <div class="input-group-append">
+                                <button class="input-group-text" id="btnSearch" ><i class="bi bi-funnel"></i></button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-footer"></div>
+                </div>
+            </div>
+            <p></p>
+        </div>
+        <div class="row">
+            @foreach (var item in GetContacts())
+            {
+                var letterItem = item.Name;
+                if (letterItem.Substring(0, 1).ToUpperInvariant() != lastLetter && string.IsNullOrEmpty(filterText))
+                {
+                    lastLetter = letterItem.Substring(0, 1).ToUpperInvariant();
+                    <div class="col-lg-4 col-md-12">
+                        <div class="card" style="border-radius: 15px;">
+                            <div class="card-header d-flex align-items-center">
+                                <h4 class="card-title">@lastLetter</h4>
+                            </div>
+                            <div class="card-body">
+                                <p>@contacts.Where(x => x.Name.Substring(0,1) == lastLetter).Count() contact(s)</p>
+                            </div>
+                        </div>
+                    </div>
+                }
+                <div class="col-lg-4 col-md-12">
+                    <div class="card" style="border-radius: 15px;">
+                        <div class="card-header d-flex align-items-center">
+                            <h4 class="card-title">
+                                <a href="@string.Format("/contact/{0}", item.Id)">
+                                    @item.Name @item.LastName
+                                </a>
+                            </h4>
+                            <div class="btn-group btn-group-sm col-sm-3 ml-auto ms-auto">
+                                <a class="btn btn-info" href="#">
+                                    <i class="bi bi-search-heart"></i>
+                                </a>
+                                <a class="btn btn-primary" href="@string.Format("/contact/{0}", item.Id)">
+                                    <i class="bi bi-pencil-square"></i>
+                                </a>
+                                <a class="btn btn-danger" @onclick="@((e) => DeleteContactAsync(item))">
+                                    <i class="bi bi-trash"></i>
+                                </a>
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <a href="@string.Format("mailto:{0}", item.Email)">
+                                <i class="bi bi-envelope"></i> @item.Email
+                            </a>
+                            <p><i class="bi bi-telephone"></i> @item.Phone</p>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
 }
 
 @code {
-    public bool ShowFilters { get; set; }
-    public ContactResponse[]? contacts;
+    public ContactModel[]? contacts;
+
+    private string lastLetter = "";
+    private string filterText = string.Empty;
 
     protected override async Task OnInitializedAsync()
     {
         contacts = await ContactApi.GetContactsAsync();
     }
 
-    private async Task DeleteContactAsync(ContactResponse contact)
+    private ContactModel[] GetContacts()
     {
-        var parameters = new DialogParameters<DeleteDialog>
+        if (contacts is null)
+            return [];
+
+        ContactModel[] retVal;
+
+        if (!string.IsNullOrEmpty(filterText))
         {
-            { x => x.ContentText, $"Delete contact {contact.Name} {contact.LastName} with Id {contact.Id}?" },
-            { x => x.ButtonText, "Delete" },
-            { x => x.Color, Color.Error }
-        };
+            retVal = contacts
+                .Where(x => x.Name.Contains(filterText, StringComparison.InvariantCultureIgnoreCase) ||
+                    x.LastName.Contains(filterText, StringComparison.InvariantCultureIgnoreCase) ||
+                    (x.Email ?? "").Contains(filterText, StringComparison.InvariantCultureIgnoreCase) ||
+                    (x.Phone ?? "").Contains(filterText, StringComparison.InvariantCultureIgnoreCase))
+                .OrderBy(x => x.Name)
+                .ToArray();
+        }
+        else
+        {
+            retVal = contacts;
+        }
 
-        var options = new DialogOptions() { CloseButton = true, MaxWidth = MaxWidth.ExtraSmall };
+        return retVal.OrderBy(x => x.Name).ToArray();
+    }
 
-        var dialog = await DialogService.ShowAsync<DeleteDialog>("Delete Contact", parameters, options);
-        var result = await dialog.Result;
+    private void OnFilter()
+    => StateHasChanged();
 
-        if (result is null || result.Canceled)
-            return;
-
-        var response = await ContactApi.DeleteContactAsync(contact.Id);
-        if (string.IsNullOrEmpty(response))
-            contacts = contacts?.Where(x => x.Id != contact.Id).ToArray();
+    private async Task DeleteContactAsync(ContactModel contact)
+    {
+        bool confirmed = await JS.InvokeAsync<bool>("confirm", $"Delete contact {contact.Name} {contact.LastName} ?");
+        if (confirmed)
+        {
+            var response = await ContactApi.DeleteContactAsync(contact.Id.Value);
+            if (string.IsNullOrEmpty(response))
+                contacts = contacts?.Where(x => x.Id != contact?.Id).ToArray();
+        }
     }
 }

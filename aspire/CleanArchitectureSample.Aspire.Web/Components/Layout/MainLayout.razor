@@ -1,5 +1,4 @@
 ﻿@inherits LayoutComponentBase
-@using MudBlazor
 
 <div class="page">
     <div class="sidebar">
@@ -7,20 +6,11 @@
     </div>
 
     <main>
-        @* Required *@
-        <MudThemeProvider />
-        <MudPopoverProvider />
 
-        @* Needed for dialogs *@
-        <MudDialogProvider />
-
-        @* Needed for snackbars *@
-        <MudSnackbarProvider />
-
-        <div class="top-row px-4">
+@*         <div class="top-row px-4">
             <a href="https://learn.microsoft.com/aspnet/core/" target="_blank">About</a>
         </div>
-
+ *@
         <article class="content px-4">
             @Body
         </article>
