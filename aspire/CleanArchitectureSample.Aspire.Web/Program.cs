@@ -1,17 +1,18 @@
 using CleanArchitectureSample.Aspire.Web.Components;
 using CleanArchitectureSample.Aspire.Web;
 using CleanArchitectureSample.Aspire.ServiceDefaults;
-using CleanArchitectureSample.Aspire.Common;
+using CleanArchitectureSample.Aspire.Web.Mappers;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add service defaults & Aspire components.
 builder.AddServiceDefaults();
-builder.AddRedisOutputCache(ResourceNames.RedisCache);
 
 // Add services to the container.
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
+
+builder.Services.AddMappings();
 
 builder.Services.AddHttpClient<ContactApiClient>(client =>
     {
@@ -33,8 +34,6 @@ app.UseHttpsRedirection();
 
 app.UseStaticFiles();
 app.UseAntiforgery();
-
-app.UseOutputCache();
 
 app.MapRazorComponents<App>()
     .AddInteractiveServerRenderMode();
