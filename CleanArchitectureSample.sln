@@ -32,6 +32,7 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CleanArchitectureSample.Aspire.Web", "aspire\CleanArchitectureSample.Aspire.Web\CleanArchitectureSample.Aspire.Web.csproj", "{4C049554-AC05-4852-9A5D-4C809A3C9B0A}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CleanArchitectureSample.Aspire.Common", "aspire\CleanArchitectureSample.Aspire.Common\CleanArchitectureSample.Aspire.Common.csproj", "{911EE29B-EEA5-460B-980E-7DA98E126012}"
+
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
