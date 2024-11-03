@@ -1,50 +1,93 @@
 ﻿@page "/contacts"
 @using CleanArchitectureSample.Application.Dto.Response
+@using System.Net.Http.Json
+@using MudBlazor
 @attribute [StreamRendering(true)]
 @attribute [OutputCache(Duration = 5)]
 
 @inject ContactApiClient ContactApi
+@inject NavigationManager UriHelper
+@inject IDialogService DialogService
 
 <PageTitle>Contacts</PageTitle>
 
 <h1>Contacts</h1>
 
-<p>This component demonstrates showing data loaded from a backend API service.</p>
+<MudButtonGroup>
+    <MudButton Variant="Variant.Filled" Color="Color.Surface" Href="/contact">Create New Contact</MudButton>
+    <MudToggleIconButton @bind-Toggled="ShowFilters"
+                         Icon="bi bi-funnel-fill"
+                         Color="@Color.Error"
+                         ToggledIcon="bi bi-funnel-fill"
+                         ToggledColor="@Color.Success"
+                         title="@(ShowFilters ? "On" : "Off")" />
+</MudButtonGroup>
 
 @if (contacts == null)
 {
-    <p><em>Loading...</em></p>
+    <MudProgressCircular Color="Color.Default" Indeterminate="true" />
 }
 else
 {
-    <table class="table">
-        <thead>
-            <tr>
-                <th>Name</th>
-                <th>LastName</th>
-                <th>eMail</th>
-                <th>Country</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var contact in contacts)
-            {
-                <tr>
-                    <td>@contact.Name</td>
-                    <td>@contact.LastName</td>
-                    <td>@contact.EMail</td>
-                    <td>@contact.Country?.Name</td>
-                </tr>
-            }
-        </tbody>
-    </table>
+    <MudDataGrid Items="@contacts" Hover="true" Filterable="@ShowFilters" SortMode="@SortMode.Multiple" Groupable="false">
+        <Columns>
+            <PropertyColumn Property="x => x.Id" />
+            <PropertyColumn Property="x => x.Name" >
+                <CellTemplate>
+                    <a href="@($"contact/{context.Item.Id}")">
+                        @context.Item.Name
+                    </a>
+                </CellTemplate>
+            </PropertyColumn>
+            <PropertyColumn Property="x => x.LastName" Title="LastName" />
+            <PropertyColumn Property="x => x.EMail" />
+            <PropertyColumn Property="x => x.BirthDate" Title="Birth Date" >
+                <CellTemplate>
+                    @context.Item.BirthDate?.ToString("d")
+                </CellTemplate>
+            </PropertyColumn>
+            <TemplateColumn CellClass="d-flex justify-end">
+                <CellTemplate>
+                    <MudButton Variant="Variant.Filled" Color="Color.Surface" Href="@($"contact/{context.Item.Id}")">
+                        <i class="bi bi-pencil-square"></i>
+                    </MudButton>
+                    <MudButton @onclick="@((e) => DeleteContactAsync(context.Item))" Variant="Variant.Filled" Color="Color.Primary">
+                        <i class="bi bi-trash-fill"></i>
+                    </MudButton>
+                </CellTemplate>
+            </TemplateColumn>
+        </Columns>
+    </MudDataGrid>
 }
 
 @code {
-    private ContactResponse[]? contacts;
+    public bool ShowFilters { get; set; }
+    public ContactResponse[]? contacts;
 
     protected override async Task OnInitializedAsync()
     {
         contacts = await ContactApi.GetContactsAsync();
+    }
+
+    private async Task DeleteContactAsync(ContactResponse contact)
+    {
+        var parameters = new DialogParameters<DeleteDialog>
+        {
+            { x => x.ContentText, $"Delete contact {contact.Name} {contact.LastName} with Id {contact.Id}?" },
+            { x => x.ButtonText, "Delete" },
+            { x => x.Color, Color.Error }
+        };
+
+        var options = new DialogOptions() { CloseButton = true, MaxWidth = MaxWidth.ExtraSmall };
+
+        var dialog = await DialogService.ShowAsync<DeleteDialog>("Delete Contact", parameters, options);
+        var result = await dialog.Result;
+
+        if (result is null || result.Canceled)
+            return;
+
+        var response = await ContactApi.DeleteContactAsync(contact.Id);
+        if (string.IsNullOrEmpty(response))
+            contacts = contacts?.Where(x => x.Id != contact.Id).ToArray();
     }
 }

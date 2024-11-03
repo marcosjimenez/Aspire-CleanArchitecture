@@ -2,16 +2,33 @@ using CleanArchitectureSample.Aspire.Web.Components;
 using CleanArchitectureSample.Aspire.Web;
 using CleanArchitectureSample.Aspire.ServiceDefaults;
 using CleanArchitectureSample.Aspire.Common;
+using MudBlazor.Services;
+using CleanArchitectureSample.Aspire.Web.Mappers;
+using MudBlazor;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add service defaults & Aspire components.
 builder.AddServiceDefaults();
-builder.AddRedisOutputCache(ResourceNames.RedisCache);
+//builder.AddRedisOutputCache(ResourceNames.RedisCache);
 
 // Add services to the container.
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
+
+builder.Services.AddMudServices(config =>
+{
+    config.SnackbarConfiguration.PositionClass = Defaults.Classes.Position.BottomCenter;
+
+    config.SnackbarConfiguration.PreventDuplicates = false;
+    config.SnackbarConfiguration.NewestOnTop = false;
+    config.SnackbarConfiguration.ShowCloseIcon = true;
+    config.SnackbarConfiguration.VisibleStateDuration = 3000;
+    config.SnackbarConfiguration.HideTransitionDuration = 500;
+    config.SnackbarConfiguration.ShowTransitionDuration = 500;
+    config.SnackbarConfiguration.SnackbarVariant = Variant.Filled;
+});
+builder.Services.AddMappings();
 
 builder.Services.AddHttpClient<ContactApiClient>(client =>
     {
@@ -34,7 +51,7 @@ app.UseHttpsRedirection();
 app.UseStaticFiles();
 app.UseAntiforgery();
 
-app.UseOutputCache();
+//app.UseOutputCache();
 
 app.MapRazorComponents<App>()
     .AddInteractiveServerRenderMode();

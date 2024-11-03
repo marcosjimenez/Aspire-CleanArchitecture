@@ -1,0 +1,92 @@
+﻿@inherits BasePage
+@page "/contact/{contactId:int?}"
+@using CleanArchitectureSample.Application.Dto.Response
+@using System.Net.Http.Json
+@using MudBlazor
+@using System.Text.RegularExpressions
+@using System.ComponentModel.DataAnnotations
+@using Model
+@attribute [StreamRendering(true)]
+@attribute [OutputCache(Duration = 5)]
+
+@inject ContactApiClient ContactApi
+@inject NavigationManager NavigationManager
+@inject ISnackbar Snackbar
+
+<PageTitle>Edit Contact</PageTitle>
+
+<h1>Contact</h1>
+
+@if (countries == null)
+{
+    <MudProgressCircular Color="Color.Default" Indeterminate="true" />
+}
+else
+{
+
+<MudPaper Class="pa-4">
+    <MudForm @ref="form" Model="@contact" @bind-IsValid="@success" @bind-Errors="@errors" Spacing="8">
+        <MudTextField T="int?" Value="@contact.Id" Label="Id" ReadOnly="true"/>
+        <MudTextField T="string" @bind-Value="@contact.Name" Label="Name" Required="true" RequiredError="Name is required!" />
+        <MudTextField T="string" @bind-Value="@contact.LastName" Label="Last Name" Required="true" RequiredError="Last Name is required!" />
+        <MudDatePicker Label="Birth Date" @bind-Date="@contact.BirthDate" />
+        <MudTextField T="string" @bind-Value="@contact.Phone" Label="Phone" />
+        <MudTextField T="string" @bind-Value="@contact.Email" Label="Email" Required="true" RequiredError="Email is required!"
+                        Validation="@(new EmailAddressAttribute() {ErrorMessage = "The email address is invalid"})" />
+        <MudSelect T="string" Label="Country" MultiSelection="false" Clearable="true" @bind-Value="@contact.CountryId">
+            @if (countries is not null)
+            {
+                @foreach (var country in countries.OrderBy(x => x.Name))
+                {
+                    <MudSelectItem Value="country.Id.ToString()">@country.Name</MudSelectItem>
+                }
+            }
+        </MudSelect>
+        <div class="d-flex align-content-end">
+            <MudButton Variant="Variant.Filled" Color="Color.Surface" Href="/contacts">Cancel</MudButton>
+            <MudButton Variant="Variant.Filled" Color="Color.Primary" Disabled="@(!success)" OnClick="OnSave">Save</MudButton>
+        </div>
+    </MudForm>
+</MudPaper>
+}
+
+@code {
+    MudForm form;
+    string[] errors = { };
+    bool success;
+
+    [Parameter]
+    public int? ContactId { get; set; }
+
+    public ContactModel contact = new ContactModel();
+    public IEnumerable<CountryResponse>? countries;
+
+    protected override async Task OnInitializedAsync()
+    {
+        contact = ContactId.HasValue ?
+        await ContactApi.GetContactAsync(ContactId.Value) :
+        new ContactModel();
+
+        countries = await ContactApi.GetCountriesAsync();
+    }
+
+    async Task OnSave()
+    {
+        try
+        {
+            if (contact.Id.HasValue)
+                contact = await ContactApi.UpdateContactAsync(contact);
+            else
+                contact = await ContactApi.CreateContactAsync(contact);
+
+            Snackbar.Add("Contact saved", Severity.Info, config => { config.ShowCloseIcon = true; });
+            NavigationManager.NavigateTo($"/contact/{contact.Id}", true);
+        }
+        catch(Exception ex)
+        {
+            Snackbar.Add(ex.Message, Severity.Error, config => { config.ShowCloseIcon = true; });
+        }
+
+    }
+
+}

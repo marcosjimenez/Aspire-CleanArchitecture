@@ -19,6 +19,7 @@ public class DeleteContactCommandHandler(
         await _contactRepository.SaveAsync();
 
         await _cacheService.RemoveAsync(string.Format(ApplicationConstants.Cache.ContactItem, request.Id));
+        await _cacheService.RemoveAsync(ApplicationConstants.Cache.ContactList);
 
         return true;
     }
