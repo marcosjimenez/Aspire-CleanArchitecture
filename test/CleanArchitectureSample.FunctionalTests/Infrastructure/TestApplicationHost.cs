@@ -1,4 +1,6 @@
-﻿using Aspire.Hosting.Testing;
+﻿using Aspire.Hosting;
+using Aspire.Hosting.ApplicationModel;
+using Aspire.Hosting.Testing;
 using CleanArchitectureSample.Aspire.Common;
 
 namespace CleanArchitectureSample.FunctionalTests.Infrastructure;
